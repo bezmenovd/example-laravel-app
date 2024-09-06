@@ -59,8 +59,10 @@ class CatalogTest extends TestCase
             ->filter(fn(Product $p) => Str::contains($p->name, $search))
             ->slice(10*($page-1), 10);
 
+        $sorted = $productsBySearch->sortByDesc('id');
+
         $response->assertJson([
-            'data' => ProductResource::collection($productsBySearch)->toArray(new Request()),
+            'data' => ProductResource::collection($sorted)->toArray(new Request()),
         ]);
     }
 }

@@ -29,6 +29,7 @@ class CatalogController
             ->when($request->query, function(Builder $query) use ($request) {
                 $query->where('name', 'like', "%{$request->search}%");
             })
+            ->orderBy('id', 'desc')
             ->paginate(
                 perPage: $request->per_page,
                 page: $request->page,

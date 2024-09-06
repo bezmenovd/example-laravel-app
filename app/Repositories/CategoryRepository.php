@@ -10,24 +10,34 @@ class CategoryRepository
 {
     public function getCategoriesTree(): CategoriesTree
     {
+        $categories = Category::query()->get();
+        $categoriesMap = [];
+
+        foreach ($categories as $category) {
+            /** @var Category $category */
+            $categoriesMap[$category->parent_id][] = $category;
+        }
+
         $addChildren = null;
-        $addChildren = function(CategoriesTree &$tree, Collection &$categories) use (&$addChildren) 
+        $addChildren = function(CategoriesTree &$tree) use (&$addChildren, $categoriesMap) 
         {
-            $children = $categories->filter(fn(Category $c) => $c->parent_id == $tree->category?->id ?? null);
-            
+            $children = key_exists($tree->category?->id, $categoriesMap) ? $categoriesMap[$tree->category?->id] : [];
+
             foreach ($children as $child) {
                 /** @var Category $child */
                 $node = new CategoriesTree($child);
+
                 $tree->children[] = $node;
                 
-                $addChildren($node, $categories);
+                $addChildren($node);
             }
         };
 
-        $categories = Category::query()->get();
         $tree = new CategoriesTree();
 
-        $addChildren($tree, $categories);
+        $addChildren($tree);
+
+        dd($tree);
 
         return $tree;
     }
