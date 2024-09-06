@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Catalog;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -8,9 +8,9 @@ use Illuminate\Foundation\Http\FormRequest;
  * @property int $category_id
  * @property ?int $page
  * @property ?int $per_page
- * @property ?string $query
+ * @property ?int $search
  */
-class ListRequest extends FormRequest
+class ProductsRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -23,7 +23,7 @@ class ListRequest extends FormRequest
             'category_id' => 'numeric|nullable',
             'page' => 'numeric|nullable',
             'per_page' => 'numeric|nullable',
-            'query' => 'string|nullable'
+            'search' => 'string|nullable',
         ];
     }
 }

@@ -12,10 +12,10 @@ class CategoriesTree implements Arrayable
         public array $children = [],
     ) {}
 
-    public function toArray()
+    public function toArray(callable $format = null)
     {
-        return array_merge($this->category?->toArray() ?? [], [
-            'children' => array_map(fn(Category $c) => $c->toArray(), $this->children),
+        return array_merge(($format ? $format($this->category) : $this->category?->toArray()) ?? [], [
+            'children' => array_map(fn(CategoriesTree $ct) => $format ? $format($ct) : $ct->toArray(), $this->children),
         ]);
     }
 }

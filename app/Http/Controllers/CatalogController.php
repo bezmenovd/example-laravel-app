@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ListRequest;
-use App\Models\Category;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use App\Http\Requests\Catalog\ProductsRequest;
+use App\Http\Resources\Catalog\ProductResource;
 use App\Models\Product;
 use App\Repositories\CategoryRepository;
-use Illuminate\Database\Query\Builder;
 
 class CatalogController
 {
@@ -14,24 +15,25 @@ class CatalogController
         protected CategoryRepository $categoryRepository,
     ) {}    
 
-    public function categories()
+    public function categories(Request $request)
     {
         $categoriesTree = $this->categoryRepository->getCategoriesTree();
 
-        return response()->json([
-            'tree' => $categoriesTree->toArray(),
-        ]);
+        return response()->json($categoriesTree->toArray());
     }
 
-    public function products(ListRequest $request)
+    public function products(ProductsRequest $request)
     {
         $products = Product::query()
             ->where('category_id', $request->category_id)
             ->when($request->query, function(Builder $query) use ($request) {
-                $query->where('name', 'like', "%{$request->query}%");
+                $query->where('name', 'like', "%{$request->search}%");
             })
-            ->limit($request->per_page ?? 10)
-            ->offset($request->page ?? 1)
-            ->get();
+            ->paginate(
+                perPage: $request->per_page,
+                page: $request->page,
+            );
+
+        return ProductResource::collection($products);
     }
 }

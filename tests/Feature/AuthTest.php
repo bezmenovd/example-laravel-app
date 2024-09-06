@@ -12,7 +12,7 @@ class AuthTest extends TestCase
 
     public function test_register_success(): void
     {
-        $response = $this->post(route('auth.register'), [
+        $response = $this->post(route('register'), [
             'email' => fake()->email(),
             'name' => fake()->name(),
             'password' => fake()->password(),
@@ -24,7 +24,7 @@ class AuthTest extends TestCase
 
     public function test_register_user_already_exists(): void
     {
-        $response = $this->post(route('auth.register'), [
+        $response = $this->post(route('register'), [
             'email' => $email=fake()->email(),
             'name' => fake()->name(),
             'password' => fake()->password(),
@@ -33,7 +33,7 @@ class AuthTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure(['token']);
 
-        $response = $this->post(route('auth.register'), [
+        $response = $this->post(route('register'), [
             'email' => $email,
             'name' => fake()->name(),
             'password' => fake()->password(),
@@ -44,7 +44,7 @@ class AuthTest extends TestCase
     
     public function test_login_success(): void
     {
-        $response = $this->post(route('auth.register'), [
+        $response = $this->post(route('register'), [
             'email' => $email=fake()->email(),
             'name' => fake()->name(),
             'password' => $password=fake()->password(),
@@ -52,7 +52,7 @@ class AuthTest extends TestCase
 
         $response->assertStatus(200);
 
-        $response = $this->post(route('auth.login'), [
+        $response = $this->post(route('login'), [
             'email' => $email,
             'password' => $password,
         ]);
@@ -62,7 +62,7 @@ class AuthTest extends TestCase
     
     public function test_login_invalid_password(): void
     {
-        $response = $this->post(route('auth.register'), [
+        $response = $this->post(route('register'), [
             'email' => $email=fake()->email(),
             'name' => fake()->name(),
             'password' => $password=fake()->password(),
@@ -70,7 +70,7 @@ class AuthTest extends TestCase
 
         $response->assertStatus(200);
 
-        $response = $this->post(route('auth.login'), [
+        $response = $this->post(route('login'), [
             'email' => $email,
             'password' => fake()->password() . fake()->password(),
         ]);

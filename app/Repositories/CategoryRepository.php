@@ -10,21 +10,24 @@ class CategoryRepository
 {
     public function getCategoriesTree(): CategoriesTree
     {
-        function addChildren(CategoriesTree &$tree, Collection &$categories) {
+        $addChildren = null;
+        $addChildren = function(CategoriesTree &$tree, Collection &$categories) use (&$addChildren) 
+        {
             $children = $categories->filter(fn(Category $c) => $c->parent_id == $tree->category?->id ?? null);
             
             foreach ($children as $child) {
                 /** @var Category $child */
                 $node = new CategoriesTree($child);
                 $tree->children[] = $node;
-                addChildren($node, $categories);
+                
+                $addChildren($node, $categories);
             }
         };
 
         $categories = Category::query()->get();
         $tree = new CategoriesTree();
 
-        addChildren($tree, $categories);
+        $addChildren($tree, $categories);
 
         return $tree;
     }
